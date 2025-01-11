@@ -1,6 +1,8 @@
-package br.com.bank.api.service;
+package br.com.bank.api.core.service;
 
+import br.com.bank.api.core.dto.ResponseDto;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,5 +35,9 @@ public class DtoService {
         return dtos.stream()
                 .map(dto -> entityToDto(dto, entityClass))
                 .collect(Collectors.toList());
+    }
+
+    public static ResponseDto.Post.Response getResponseDtoPostSucess(Object object){
+        return new ResponseDto.Post.Response(HttpStatus.CREATED.value(), object);
     }
 }

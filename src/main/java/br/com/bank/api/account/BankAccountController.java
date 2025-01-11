@@ -1,6 +1,8 @@
 package br.com.bank.api.account;
 
 import br.com.bank.api.account.dto.BankAccountDto;
+import br.com.bank.api.core.service.DtoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,29 +31,30 @@ public class BankAccountController {
         return ResponseEntity.ok(this.bankAccountService.getAll(pageable));
     }
 
-    @GetMapping("/{branch}")
+    @GetMapping("/number/{number}")
+    public ResponseEntity<BankAccountDto.Response.BankAccount> getOneByNumber(@PathVariable String number){
+        return ResponseEntity.ok(this.bankAccountService.getOneByNumber(number));
+    }
+
+    @GetMapping("/branch/{branch}")
     public ResponseEntity<Page<BankAccountDto.Response.BankAccount>> getAllByBranch(
             @PageableDefault(sort = "holderName", size = 15, direction = Sort.Direction.ASC) Pageable pageable,
             @PathVariable String branch){
         return ResponseEntity.ok(this.bankAccountService.getAllByBranch(branch, pageable));
     }
 
-    @GetMapping("/holderDocument}")
+    @GetMapping("/holderDocument/{holderDocument}")
     public ResponseEntity<Page<BankAccountDto.Response.BankAccount>> getAllByHolderDocument(
             @PageableDefault(sort = "holderName", size = 15, direction = Sort.Direction.ASC) Pageable pageable,
             @PathVariable String holderDocument){
         return ResponseEntity.ok(this.bankAccountService.getAllByHolderDocument(holderDocument, pageable));
     }
 
-    @GetMapping("/{number}")
-    public ResponseEntity<BankAccountDto.Response.BankAccount> getOneByNumber(@PathVariable String number){
-        return ResponseEntity.ok(this.bankAccountService.getOneByNumber(number));
-    }
-
     @PostMapping
-    public ResponseEntity<Object> post(@RequestBody BankAccountDto.Request.BankAccount dto){
-        this.bankAccountService.post(dto);
-        return ResponseEntity.status(CREATED).body(null);
+    public ResponseEntity<Object> post(@Valid @RequestBody BankAccountDto.Request.BankAccount dto){
+        BankAccount account = this.bankAccountService.post(dto);
+        return ResponseEntity.status(CREATED).body(DtoService.getResponseDtoPostSucess(
+                DtoService.entityToDto(account, BankAccountDto.Response.BankAccount.class)));
     }
 
 }

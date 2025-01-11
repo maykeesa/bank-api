@@ -11,9 +11,9 @@ import java.util.UUID;
 @Repository
 public interface BankAccountRepository extends JpaRepository<BankAccount, UUID> {
 
-    List<BankAccountDto.Response.BankAccount> findByBranch(String branch);
+    List<BankAccount> findByBranch(String branch);
 
-    List<BankAccountDto.Response.BankAccount> findByHolderDocument(String holderDocument);
+    List<BankAccount> findByHolderDocument(String holderDocument);
 
     Optional<BankAccount> findByNumber(String number);
 

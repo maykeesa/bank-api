@@ -3,7 +3,10 @@ package br.com.bank.api.account.dto;
 import br.com.bank.api.account.enums.AccountStatus;
 import br.com.bank.api.account.enums.AccountType;
 import br.com.bank.api.account.enums.HolderType;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -15,17 +18,25 @@ public class BankAccountDto {
 
         @Data
         public static class BankAccount{
-            @NotNull
+            @NotBlank(message = "The field cannot be null or blank")
             private String branch;
-            @NotNull
+
+            @NotNull(message = "The field cannot be null")
             private AccountType type;
-            @NotNull
+
+            @NotBlank(message = "The field cannot be null or blank")
+            @Size(max = 200, message = "The holder's name can be up to 200 characters long")
             private String holderName;
-            @NotNull
+
+            @Email
+            @NotBlank(message = "The field cannot be null or blank")
+            @Size(max = 200, message = "The holder's name can be up to 200 characters long")
             private String holderEmail;
-            @NotNull
+
+            @NotBlank(message = "The field cannot be null or blank")
             private String holderDocument;
-            @NotNull
+
+            @NotNull(message = "The field cannot be null")
             private HolderType holderType;
         }
     }

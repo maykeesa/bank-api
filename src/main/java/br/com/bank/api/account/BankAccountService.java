@@ -2,18 +2,19 @@ package br.com.bank.api.account;
 
 import br.com.bank.api.account.dto.BankAccountDto;
 import br.com.bank.api.account.enums.AccountStatus;
-import br.com.bank.api.service.DtoService;
+import br.com.bank.api.core.service.DtoService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 
 @Service
 public class BankAccountService {
@@ -30,7 +31,7 @@ public class BankAccountService {
     }
 
     public Page<BankAccountDto.Response.BankAccount> getAllByBranch(String branch, Pageable pageable){
-        List<BankAccountDto.Response.BankAccount> accounts = this.bankAccountRepo.findByBranch(branch);
+        List<BankAccount> accounts = this.bankAccountRepo.findByBranch(branch);
         List<BankAccountDto.Response.BankAccount> accountsDto =
                 DtoService.entitysToDtos(accounts, BankAccountDto.Response.BankAccount.class);
 
@@ -38,7 +39,7 @@ public class BankAccountService {
     }
 
     public Page<BankAccountDto.Response.BankAccount> getAllByHolderDocument(String holderDocument, Pageable pageable) {
-        List<BankAccountDto.Response.BankAccount> accounts = this.bankAccountRepo.findByHolderDocument(holderDocument);
+        List<BankAccount> accounts = this.bankAccountRepo.findByHolderDocument(holderDocument);
         List<BankAccountDto.Response.BankAccount> accountsDto =
                 DtoService.entitysToDtos(accounts, BankAccountDto.Response.BankAccount.class);
 
@@ -55,20 +56,20 @@ public class BankAccountService {
         return DtoService.entityToDto(accountOptional.get(), BankAccountDto.Response.BankAccount.class);
     }
 
-    public void post(BankAccountDto.Request.BankAccount dto) {
-        BankAccount account = this.register(dto);
+    public BankAccount post(BankAccountDto.Request.BankAccount dto) {
+        return this.bankAccountRepo.save(this.register(dto));
     }
 
     private BankAccount register(BankAccountDto.Request.BankAccount dto){
         BankAccount account = DtoService.dtoToEntity(dto, BankAccount.class);
         account.setNumber(generateNumberAccount());
-        account.setStatus(AccountStatus.ACTIVE);
+        account.setStatus(AccountStatus.valueOf(AccountStatus.ACTIVE.toString()));
 
         return account;
     }
 
     private String generateNumberAccount(){
-        String randomNumber = String.valueOf(100000000 + new Random().nextInt(900000000));
+        String randomNumber = String.valueOf(10000 + new Random().nextInt(900000000));
 
         if(this.bankAccountRepo.findByNumber(randomNumber).isPresent()){
             this.generateNumberAccount();

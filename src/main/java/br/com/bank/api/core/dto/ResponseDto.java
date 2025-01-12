@@ -6,14 +6,13 @@ import org.springframework.http.HttpStatus;
 
 public class ResponseDto {
 
-    public enum Post{;
+    public enum Body{;
 
         @Data
         @AllArgsConstructor
         public static class Response{
             private int status;
             private Object body;
-
         }
 
     }

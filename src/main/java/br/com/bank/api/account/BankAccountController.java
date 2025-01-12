@@ -1,6 +1,7 @@
 package br.com.bank.api.account;
 
 import br.com.bank.api.account.dto.BankAccountDto;
+import br.com.bank.api.core.dto.ResponseDto;
 import br.com.bank.api.core.service.DtoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -51,10 +55,19 @@ public class BankAccountController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> post(@Valid @RequestBody BankAccountDto.Request.BankAccount dto){
-        BankAccount account = this.bankAccountService.post(dto);
-        return ResponseEntity.status(CREATED).body(DtoService.getResponseDtoPostSucess(
-                DtoService.entityToDto(account, BankAccountDto.Response.BankAccount.class)));
+    public ResponseEntity<ResponseDto.Body.Response> register(@Valid @RequestBody BankAccountDto.Request.Register dto){
+        ResponseDto.Body.Response account = this.bankAccountService.register(dto);
+
+        return ResponseEntity.status(CREATED).body(account);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseDto.Body.Response> update(
+            @PathVariable UUID id,
+            @Valid @RequestBody BankAccountDto.Request.Update dto){
+        ResponseDto.Body.Response update = this.bankAccountService.update(id, dto);
+
+        return ResponseEntity.ok(update);
     }
 
 }

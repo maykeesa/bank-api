@@ -1,4 +1,10 @@
 package br.com.bank.api.transaction;
 
-public class TransactionRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.UUID;
+
+@Repository
+public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
 }

@@ -1,8 +1,7 @@
-package br.com.bank.api.core.dto;
+package br.com.bank.api.utils.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.http.HttpStatus;
 
 public class ResponseDto {
 
@@ -13,6 +12,14 @@ public class ResponseDto {
         public static class Response{
             private int status;
             private Object body;
+        }
+
+        @Data
+        @AllArgsConstructor
+        public static class ResponseError{
+            private int status;
+            private Object error;
+            private Object cause;
         }
 
     }

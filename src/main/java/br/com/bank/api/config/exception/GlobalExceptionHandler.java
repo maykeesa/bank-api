@@ -1,6 +1,8 @@
 package br.com.bank.api.config.exception;
 
-import br.com.bank.api.core.dto.ResponseDto;
+import br.com.bank.api.config.exception.exceptions.AccountConflictException;
+import br.com.bank.api.config.exception.exceptions.AccountCounterPartyConflictException;
+import br.com.bank.api.utils.dto.ResponseDto;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -18,7 +20,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ResponseDto.Body.Response> handlerMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ResponseDto.Body.ResponseError> handlerMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         Map<String, String> map = new HashMap<>();
         var fieldErrors = ex.getBindingResult().getFieldErrors();
 
@@ -26,11 +28,27 @@ public class GlobalExceptionHandler {
             map.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
 
-        return ResponseEntity.badRequest().body(new ResponseDto.Body.Response(BAD_REQUEST.value(), map));
+        return ResponseEntity.badRequest().body(
+                new ResponseDto.Body.ResponseError(BAD_REQUEST.value(), ex.getClass().getSimpleName(), map));
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ResponseDto.Body.Response> handlerEntityNotFound(EntityNotFoundException ex){
-        return ResponseEntity.status(NOT_FOUND).body(new ResponseDto.Body.Response(NOT_FOUND.value(), ex.getMessage()));
+    public ResponseEntity<ResponseDto.Body.ResponseError> handlerEntityNotFound(EntityNotFoundException ex){
+        return ResponseEntity.status(NOT_FOUND).body(
+                new ResponseDto.Body.ResponseError(NOT_FOUND.value(), ex.getClass().getSimpleName(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(AccountConflictException.class)
+    public ResponseEntity<ResponseDto.Body.ResponseError> handlerAccountConflict(AccountConflictException ex){
+        return ResponseEntity.status(BAD_REQUEST).body(
+                new ResponseDto.Body.ResponseError(BAD_REQUEST.value(), ex.getClass().getSimpleName(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(AccountCounterPartyConflictException.class)
+    public ResponseEntity<ResponseDto.Body.ResponseError> handlerAccountCounterPartyConflict(
+            AccountCounterPartyConflictException ex){
+
+        return ResponseEntity.status(BAD_REQUEST).body(
+                new ResponseDto.Body.ResponseError(BAD_REQUEST.value(), ex.getClass().getSimpleName(), ex.getMessage()));
     }
 }

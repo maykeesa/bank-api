@@ -1,8 +1,7 @@
 package br.com.bank.api.account;
 
 import br.com.bank.api.account.dto.BankAccountDto;
-import br.com.bank.api.core.dto.ResponseDto;
-import br.com.bank.api.core.service.DtoService;
+import br.com.bank.api.utils.dto.ResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,10 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
-import static org.springframework.http.HttpStatus.CREATED;
-
 @RestController
-@RequestMapping("/bankAccount")
+@RequestMapping("/bank-account")
 public class BankAccountController {
 
     @Autowired
@@ -32,42 +29,45 @@ public class BankAccountController {
     @GetMapping
     public ResponseEntity<Page<BankAccountDto.Response.BankAccount>> getAll(
             @PageableDefault(sort = "holderName", size = 15, direction = Sort.Direction.ASC) Pageable pageable){
+
         return ResponseEntity.ok(this.bankAccountService.getAll(pageable));
     }
 
     @GetMapping("/number/{number}")
-    public ResponseEntity<BankAccountDto.Response.BankAccount> getOneByNumber(@PathVariable String number){
-        return ResponseEntity.ok(this.bankAccountService.getOneByNumber(number));
+    public ResponseEntity<ResponseDto.Body.Response> getByNumber(@PathVariable String number){
+
+        return ResponseEntity.ok(this.bankAccountService.getByNumber(number));
     }
 
     @GetMapping("/branch/{branch}")
     public ResponseEntity<Page<BankAccountDto.Response.BankAccount>> getAllByBranch(
             @PageableDefault(sort = "holderName", size = 15, direction = Sort.Direction.ASC) Pageable pageable,
             @PathVariable String branch){
+
         return ResponseEntity.ok(this.bankAccountService.getAllByBranch(branch, pageable));
     }
 
-    @GetMapping("/holderDocument/{holderDocument}")
+    @GetMapping("/holder-document/{holderDocument}")
     public ResponseEntity<Page<BankAccountDto.Response.BankAccount>> getAllByHolderDocument(
             @PageableDefault(sort = "holderName", size = 15, direction = Sort.Direction.ASC) Pageable pageable,
             @PathVariable String holderDocument){
+
         return ResponseEntity.ok(this.bankAccountService.getAllByHolderDocument(holderDocument, pageable));
     }
 
     @PostMapping
     public ResponseEntity<ResponseDto.Body.Response> register(@Valid @RequestBody BankAccountDto.Request.Register dto){
-        ResponseDto.Body.Response account = this.bankAccountService.register(dto);
+        ResponseDto.Body.Response response = this.bankAccountService.register(dto);
 
-        return ResponseEntity.status(CREATED).body(account);
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDto.Body.Response> update(
             @PathVariable UUID id,
             @Valid @RequestBody BankAccountDto.Request.Update dto){
-        ResponseDto.Body.Response update = this.bankAccountService.update(id, dto);
 
-        return ResponseEntity.ok(update);
+        return ResponseEntity.ok(this.bankAccountService.update(id, dto));
     }
 
 }

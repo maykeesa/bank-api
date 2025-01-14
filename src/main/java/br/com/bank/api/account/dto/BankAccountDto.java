@@ -3,11 +3,9 @@ package br.com.bank.api.account.dto;
 import br.com.bank.api.account.enums.AccountStatus;
 import br.com.bank.api.account.enums.AccountType;
 import br.com.bank.api.account.enums.HolderType;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import br.com.bank.api.balance.dto.BalanceDto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -21,12 +19,13 @@ public class BankAccountDto {
 
         @Data
         public static class Register{
+            @Size(max = 5, message = "The branch can be up to 5 characters long")
             @NotBlank(message = "The field cannot be null or blank")
             private String branch;
 
             @Pattern(regexp = "PAYMENT|CURRENT|SAVINGS|SALARY", message = "The value of the status field can only be " +
                     "PAYMENT, CURRENT, SAVINGS or SALARY")
-            @NotNull(message = "The field cannot be null")
+            @NotBlank(message = "The field cannot be null or blank")
             private String type;
 
             @NotBlank(message = "The field cannot be null or blank")
@@ -42,7 +41,7 @@ public class BankAccountDto {
             private String holderDocument;
 
             @Pattern(regexp = "NATURAL|LEGAL", message = "The value of the status field can only be NATURAL or LEGAL")
-            @NotNull(message = "The field cannot be null")
+            @NotBlank(message = "The field cannot be null or blank")
             private String holderType;
         }
 
@@ -71,6 +70,7 @@ public class BankAccountDto {
             private String holderDocument;
             private HolderType holderType;
             private AccountStatus status;
+            private BalanceDto.Response.BalanceWithoutId balance;
             private LocalDateTime createdAt;
             private LocalDateTime updateAt;
         }

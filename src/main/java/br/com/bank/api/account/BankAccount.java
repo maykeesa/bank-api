@@ -4,11 +4,12 @@ import br.com.bank.api.account.enums.AccountStatus;
 import br.com.bank.api.account.enums.AccountType;
 import br.com.bank.api.account.enums.HolderType;
 import br.com.bank.api.balance.Balance;
-import jakarta.annotation.Nullable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,6 +29,7 @@ public class BankAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(length = 5)
     private String branch;
     @Column(length = 10)
     private String number;
@@ -44,14 +46,34 @@ public class BankAccount {
     private AccountStatus status;
     @CreationTimestamp
     private LocalDateTime createdAt;
-    @Nullable
     private LocalDateTime updateAt;
 
-    @OneToOne
+    @OneToOne(mappedBy = "bankAccount", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Balance balance;
 
     public BankAccount(){
 
     }
 
+    @Override
+    public String toString() {
+        return "BankAccount{" +
+                "id=" + id +
+                ", branch='" + branch + '\'' +
+                ", number='" + number + '\'' +
+                ", type=" + type +
+                ", holderName='" + holderName + '\'' +
+                ", holderEmail='" + holderEmail + '\'' +
+                ", holderDocument='" + holderDocument + '\'' +
+                ", holderType=" + holderType +
+                ", status=" + status +
+                ", createdAt=" + createdAt +
+                ", updateAt=" + updateAt +
+                ", balance={" +
+                    "bankAccountId=" + balance.getBankAccountId() +
+                    ", availableAmount=" + balance.getAvailableAmount() +
+                    ", blockedAmount=" + balance.getBlockedAmount() +
+                    '}' +
+                '}';
+    }
 }

@@ -1,7 +1,6 @@
-package br.com.bank.api.core.service;
+package br.com.bank.api.utils.service;
 
-import br.com.bank.api.account.dto.BankAccountDto;
-import br.com.bank.api.core.dto.ResponseDto;
+import br.com.bank.api.utils.dto.ResponseDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 
@@ -9,6 +8,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class DtoService {
+
+    public static <D> ResponseDto.Body.Response okResponseDto(Object object, Class<D> dtoClass){
+        D objectDto = DtoService.entityToDto(object, dtoClass);
+        return new ResponseDto.Body.Response(HttpStatus.OK.value(), objectDto);
+    }
+
+    public static <D> ResponseDto.Body.Response createdResponseDto(Object object, Class<D> dtoClass){
+        D objectDto = DtoService.entityToDto(object, dtoClass);
+        return new ResponseDto.Body.Response(HttpStatus.CREATED.value(), objectDto);
+    }
 
     private static ModelMapper getModelMapper(){
         ModelMapper modelMapper = new ModelMapper();
@@ -18,7 +27,7 @@ public class DtoService {
         return modelMapper;
     }
 
-    public static <E, D> D entityToDto(E entity, Class<D> dtoClass){
+    private static <E, D> D entityToDto(E entity, Class<D> dtoClass){
         return getModelMapper().map(entity, dtoClass);
     }
 
@@ -32,14 +41,4 @@ public class DtoService {
                 .collect(Collectors.toList());
     }
 
-    public static <D, E> List<E> dtosToEntitys(List<D> dtos, Class<E> entityClass){
-        return dtos.stream()
-                .map(dto -> entityToDto(dto, entityClass))
-                .collect(Collectors.toList());
-    }
-
-    public static <D> ResponseDto.Body.Response getResponseDto(Object object, Class<D> dtoClass){
-        D objectDto = DtoService.entityToDto(object, dtoClass);
-        return new ResponseDto.Body.Response(HttpStatus.CREATED.value(), objectDto);
-    }
 }

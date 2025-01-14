@@ -1,10 +1,14 @@
 package br.com.bank.api.transaction;
 
 import br.com.bank.api.transaction.dto.TransactionDto;
+import br.com.bank.api.utils.dto.ResponseDto;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,10 +22,17 @@ public class TransactionController {
     private TransactionService transactionService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<TransactionDto.Response.Transaction> getOne(@PathVariable UUID id){
-        return ResponseEntity.ok(this.transactionService.getOne(id));
+    public ResponseEntity<ResponseDto.Body.Response> getById(@PathVariable UUID id){
+
+        return ResponseEntity.ok(this.transactionService.getById(id));
     }
 
-    //O sistema deve permitir buscar transações filtrando pelo código do banco e número da conta bancária da contraparte.
+    @PostMapping
+    public ResponseEntity<ResponseDto.Body.Response> register(
+            @Valid @RequestBody TransactionDto.Request.Transaction dto){
+        ResponseDto.Body.Response response = this.transactionService.register(dto);
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 
 }

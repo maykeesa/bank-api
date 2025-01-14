@@ -4,6 +4,7 @@ import br.com.bank.api.account.BankAccount;
 import br.com.bank.api.account.enums.AccountType;
 import br.com.bank.api.account.enums.HolderType;
 import br.com.bank.api.transaction.enums.TransactionType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -29,10 +31,9 @@ public class Transaction {
     private UUID id;
     @Enumerated(EnumType.STRING)
     private TransactionType type;
+    @Column(precision = 16, scale = 2)
     private BigDecimal amount;
-    @ManyToOne
-    @JoinColumn(name = "bank_account_id", referencedColumnName = "id", nullable = false)
-    private BankAccount bankAccountId;
+    @Column(length = 3)
     private String counterPartyBankCode;
     private String counterPartyBankName;
     private String counterPartyBranch;
@@ -43,10 +44,35 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private HolderType counterHolderType;
     private String counterHolderDocument;
+    @CreationTimestamp
     private LocalDateTime createdAt;
     private LocalDateTime updateAt;
 
+    @ManyToOne
+    @JoinColumn(name = "bank_account_id", referencedColumnName = "id", nullable = false)
+    private BankAccount bankAccountId;
+
     public Transaction(){
 
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id=" + id +
+                ", type=" + type +
+                ", amount=" + amount +
+                ", bankAccountId=" + bankAccountId.getId() +
+                ", counterPartyBankCode='" + counterPartyBankCode +
+                ", counterPartyBankName='" + counterPartyBankName +
+                ", counterPartyBranch='" + counterPartyBranch +
+                ", counterAccountNumber='" + counterAccountNumber +
+                ", counterAccountType=" + counterAccountType +
+                ", counterHolderName='" + counterHolderName +
+                ", counterHolderType=" + counterHolderType +
+                ", counterHolderDocument='" + counterHolderDocument +
+                ", createdAt=" + createdAt +
+                ", updateAt=" + updateAt +
+                '}';
     }
 }

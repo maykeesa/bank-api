@@ -3,14 +3,21 @@ package br.com.bank.api.transaction;
 import br.com.bank.api.account.BankAccount;
 import br.com.bank.api.account.utils.BankAccountServiceUtils;
 import br.com.bank.api.transaction.dto.TransactionDto;
+import br.com.bank.api.transaction.enums.TransactionType;
 import br.com.bank.api.transaction.utils.TransactionServiceUtils;
 import br.com.bank.api.utils.dto.ResponseDto;
 import br.com.bank.api.utils.service.DtoService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -24,14 +31,30 @@ public class TransactionService {
     @Autowired
     private BankAccountServiceUtils BankAccountServiceUtils;
 
+    public Page<TransactionDto.Response.Transaction> getAll(String date, String type, Pageable pageable) {
+        String convertedDate = this.transactionServiceUtils.convertedDate(date);
+
+        Page<Transaction> transactions = this.transactionRepository.findAll(convertedDate, type, pageable);
+        List<TransactionDto.Response.Transaction> transactionsDto =
+                DtoService.entitysToDtos(transactions.getContent(), TransactionDto.Response.Transaction.class);
+
+        return new PageImpl<>(transactionsDto, transactions.getPageable(), transactions.getTotalElements());
+    }
+
     public ResponseDto.Body.Response getById(UUID id){
-        Optional<Transaction> transactionOptional = this.transactionRepository.findById(id);
+        Transaction transaction = this.transactionServiceUtils.getById(id);
 
-        if(transactionOptional.isEmpty()){
-            throw new EntityNotFoundException("The transaction id "+ id +" was not found.");
-        }
+        return DtoService.okResponseDto(transaction, TransactionDto.Response.Transaction.class);
+    }
 
-        return DtoService.okResponseDto(transactionOptional.get(), TransactionDto.Response.Transaction.class);
+    public Page<TransactionDto.Response.Transaction> getAllByBankCodeAndNumberCounterParty(
+            String bankCode, String numberCounterParty, Pageable pageable) {
+        Page<Transaction> transactions = this.transactionRepository
+                .findAllByBankCodeAndNumberCounterParty(bankCode, numberCounterParty, pageable);
+        List<TransactionDto.Response.Transaction> transactionsDto =
+                DtoService.entitysToDtos(transactions.getContent(), TransactionDto.Response.Transaction.class);
+
+        return new PageImpl<>(transactionsDto, transactions.getPageable(), transactions.getTotalElements());
     }
 
     public ResponseDto.Body.Response register(TransactionDto.Request.Transaction dto){

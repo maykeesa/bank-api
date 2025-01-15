@@ -20,6 +20,7 @@ public class BalanceController {
     @Autowired
     private BalanceService balanceService;
 
+
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDto.Body.Response> update(
             @PathVariable UUID id,

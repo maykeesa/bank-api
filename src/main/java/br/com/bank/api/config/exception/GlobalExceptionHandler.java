@@ -4,6 +4,7 @@ import br.com.bank.api.config.exception.exceptions.AccountConflictException;
 import br.com.bank.api.config.exception.exceptions.AccountCounterPartyConflictException;
 import br.com.bank.api.utils.dto.ResponseDto;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -48,6 +49,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseDto.Body.ResponseError> handlerAccountCounterPartyConflict(
             AccountCounterPartyConflictException ex){
 
+        return ResponseEntity.status(BAD_REQUEST).body(
+                new ResponseDto.Body.ResponseError(BAD_REQUEST.value(), ex.getClass().getSimpleName(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ResponseDto.Body.ResponseError> handleConstraintViolation(ConstraintViolationException ex) {
         return ResponseEntity.status(BAD_REQUEST).body(
                 new ResponseDto.Body.ResponseError(BAD_REQUEST.value(), ex.getClass().getSimpleName(), ex.getMessage()));
     }

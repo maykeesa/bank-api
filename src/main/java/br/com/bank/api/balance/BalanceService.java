@@ -1,7 +1,7 @@
 package br.com.bank.api.balance;
 
 import br.com.bank.api.balance.dto.BalanceDto;
-import br.com.bank.api.balance.utils.BalanceServiceUils;
+import br.com.bank.api.balance.utils.BalanceServiceUtils;
 import br.com.bank.api.transaction.utils.TransactionServiceUtils;
 import br.com.bank.api.utils.dto.ResponseDto;
 import br.com.bank.api.utils.service.DtoService;
@@ -20,12 +20,14 @@ public class BalanceService {
     private BalanceRepository balanceRepo;
 
     @Autowired
-    private BalanceServiceUils balanceServiceUils;
+    private BalanceServiceUtils balanceServiceUtils;
     @Autowired
     private TransactionServiceUtils transactionServiceUtils;
 
     public ResponseDto.Body.Response update(UUID id, BalanceDto.Request.Update dto) {
         Balance balanceAccount = this.balanceRepo.findById(id).map(balance -> {
+            transactionServiceUtils.sendTransaction(balance.getBankAccount(), dto);
+
             if (Objects.nonNull(dto.getBlockedAmount())) {
                 balance.setBlockedAmount(dto.getBlockedAmount());
             }

@@ -8,6 +8,8 @@ import br.com.bank.api.config.exception.exceptions.AccountConflictException;
 import br.com.bank.api.utils.service.DtoService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,8 +43,8 @@ public class BankAccountServiceUtils {
         return accountOptional.get();
     }
 
-    public List<BankAccount> getAllByBranch(String branch){
-        List<BankAccount> accounts = this.bankAccountRepo.findByBranch(branch);
+    public Page<BankAccount> getAllByBranch(String branch , Pageable pageable){
+        Page<BankAccount> accounts = this.bankAccountRepo.findByBranch(branch, pageable);
 
         if(accounts.isEmpty()){
             throw new EntityNotFoundException("Branch " + branch + " is not associated with any account.");
@@ -51,8 +53,8 @@ public class BankAccountServiceUtils {
         return accounts;
     }
 
-    public List<BankAccount> getAllByHolderDocument(String holderDocument) {
-        List<BankAccount> accounts = this.bankAccountRepo.findByHolderDocument(holderDocument);
+    public Page<BankAccount> getAllByHolderDocument(String holderDocument, Pageable pageable) {
+        Page<BankAccount> accounts = this.bankAccountRepo.findByHolderDocument(holderDocument, pageable);
 
         if (accounts.isEmpty()) {
             throw new EntityNotFoundException("Holder number " + holderDocument + " is not associated with any account.");
